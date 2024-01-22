@@ -51,10 +51,14 @@ problem   <- list(name       = "ZDT1", # Name of the problem list
                   m          = NOBJ) #Number of objectives
 
 ## MOEA/D
-out <- moead(problem = problem,
-             decomp = decomp, aggfun = aggfun, neighbors = neighbors, variation = variation,
-             update = update, constraint = constraint, scaling = scaling, stopcrit = stopcrit,
-             showpars = showpars, seed = seed)
+# out <- moead(problem = problem,
+#              decomp = decomp, aggfun = aggfun, neighbors = neighbors, variation = variation,
+#              update = update, constraint = constraint, scaling = scaling, stopcrit = stopcrit,
+#              showpars = showpars, seed = seed)
+results.zdt.1 <- moead(problem = problem,
+                        preset = preset_moead("original"),
+                        decomp = list(name = "SLD", H = 99),
+                        stopcrit = stopcrit, showpars = showpars, seed = seed)
 
 # Plot output:
 plot(out$Y[,1], out$Y[,2], type = "p", pch = 20)
@@ -72,10 +76,14 @@ problem   <- list(name       = "ZDT2", # Name of the problem list
                   m          = NOBJ) #Number of objectives
 
 ## MOEA/D
-out <- moead(problem = problem,
-             decomp = decomp, aggfun = aggfun, neighbors = neighbors, variation = variation,
-             update = update, constraint = constraint, scaling = scaling, stopcrit = stopcrit,
-             showpars = showpars, seed = seed)
+# out <- moead(problem = problem,
+#              decomp = decomp, aggfun = aggfun, neighbors = neighbors, variation = variation,
+#              update = update, constraint = constraint, scaling = scaling, stopcrit = stopcrit,
+#              showpars = showpars, seed = seed)
+results.zdt.2 <- moead(problem = problem,
+                       preset = preset_moead("original"),
+                       decomp = list(name = "SLD", H = 99),
+                       stopcrit = stopcrit, showpars = showpars, seed = seed)
 
 # Plot output:
 plot(out$Y[,1], out$Y[,2], type = "p", pch = 20)
@@ -94,10 +102,14 @@ problem   <- list(name       = "ZDT3", # Name of the problem list
                   m          = NOBJ) #Number of objectives
 
 ## MOEA/D
-out <- moead(problem = problem,
-             decomp = decomp, aggfun = aggfun, neighbors = neighbors, variation = variation,
-             update = update, constraint = constraint, scaling = scaling, stopcrit = stopcrit,
-             showpars = showpars, seed = seed)
+# out <- moead(problem = problem,
+#              decomp = decomp, aggfun = aggfun, neighbors = neighbors, variation = variation,
+#              update = update, constraint = constraint, scaling = scaling, stopcrit = stopcrit,
+#              showpars = showpars, seed = seed)
+results.zdt.3 <- moead(problem = problem,
+                       preset = preset_moead("original"),
+                       decomp = list(name = "SLD", H = 99),
+                       stopcrit = stopcrit, showpars = showpars, seed = seed)
 
 # Plot output:
 plot(out$Y[,1], out$Y[,2], type = "p", pch = 20)
@@ -117,11 +129,14 @@ problem   <- list(name       = "ZDT4", # Name of the problem list
                   m          = NOBJ) #Number of objectives
 
 ## MOEA/D
-out <- moead(problem = problem,
-             decomp = decomp, aggfun = aggfun, neighbors = neighbors, variation = variation,
-             update = update, constraint = constraint, scaling = scaling, stopcrit = stopcrit,
-             showpars = showpars, seed = seed)
-
+# out <- moead(problem = problem,
+#              decomp = decomp, aggfun = aggfun, neighbors = neighbors, variation = variation,
+#              update = update, constraint = constraint, scaling = scaling, stopcrit = stopcrit,
+#              showpars = showpars, seed = seed)
+results.zdt.4 <- moead(problem = problem,
+                       preset = preset_moead("original"),
+                       decomp = list(name = "SLD", H = 99),
+                       stopcrit = stopcrit, showpars = showpars, seed = seed)
 # Plot output:
 plot(out$Y[,1], out$Y[,2], type = "p", pch = 20)
 write.csv(out$Y, file = "moeadr_fitness_moead_zdt4_100_500_2_7.csv", row.names = FALSE)
@@ -140,11 +155,14 @@ problem   <- list(name       = "ZDT6", # Name of the problem list
                   m          = NOBJ) #Number of objectives
 
 ## MOEA/D
-out <- moead(problem = problem,
-             decomp = decomp, aggfun = aggfun, neighbors = neighbors, variation = variation,
-             update = update, constraint = constraint, scaling = scaling, stopcrit = stopcrit,
-             showpars = showpars, seed = seed)
-
+# out <- moead(problem = problem,
+#              decomp = decomp, aggfun = aggfun, neighbors = neighbors, variation = variation,
+#              update = update, constraint = constraint, scaling = scaling, stopcrit = stopcrit,
+#              showpars = showpars, seed = seed)
+results.zdt.6 <- moead(problem = problem,
+                       preset = preset_moead("original"),
+                       decomp = list(name = "SLD", H = 99),
+                       stopcrit = stopcrit, showpars = showpars, seed = seed)
 # Plot output:
 plot(out$Y[,1], out$Y[,2], type = "p", pch = 20)
 write.csv(out$Y, file = "moeadr_fitness_moead_zdt6_100_500_2_10.csv", row.names = FALSE)
@@ -204,10 +222,14 @@ problem   <- list(name       = "DTLZ1", # Name of the problem list
 decomp    <- list(name       = "SLD", H = P) # Descomposition approach: Using Simplex-lattice design
 
 ## MOEA/D
-out <- moead(problem = problem,
-             decomp = decomp, aggfun = aggfun, neighbors = neighbors, variation = variation,
-             update = update, constraint = constraint, scaling = scaling, stopcrit = stopcrit,
-             showpars = showpars, seed = seed)
+# out <- moead(problem = problem,
+#              decomp = decomp, aggfun = aggfun, neighbors = neighbors, variation = variation,
+#              update = update, constraint = constraint, scaling = scaling, stopcrit = stopcrit,
+#              showpars = showpars, seed = seed)
+results.dtlz.1 <- moead(problem = problem,
+                       preset = preset_moead("original"),
+                       decomp = list(name = "SLD", H = P),
+                       stopcrit = stopcrit, showpars = showpars, seed = seed)
 
 # Plot output:
 scatterplot3d(out$Y[,1], out$Y[,2], out$Y[,3], color = "blue", pch = 16, main = "DTLZ 1")
@@ -233,7 +255,16 @@ problem.dtlz2 <- list(name = "DTLZ2",
 results.dtlz.2 <- moead(problem = problem.dtlz2,
                         preset = preset_moead("original"),
                         decomp = list(name = "SLD", H = P),
-                        stopcrit = stopcrit, seed = seed)
+                        stopcrit = stopcrit, showpars = showpars, seed = seed)
+
+
+# out <- moead(problem = problem.dtlz2,
+#              decomp = list(name = "SLD", H = P),
+#              aggfun = aggfun,
+#              neighbors = neighbors, variation = variation,
+#              update = update, constraint = constraint,
+#              scaling = scaling, stopcrit = stopcrit,
+#              showpars = showpars, seed = seed)
 
 write.csv(results.dtlz.2$Y, file = "moeadr_fitness_moead_dtlz2_120_500_4_5.csv", row.names = FALSE)
 
@@ -256,12 +287,12 @@ problem.dtlz3 <- list(name = "DTLZ3",
 results.dtlz.3 <- moead(problem = problem.dtlz3,
                         preset = preset_moead("original"),
                         decomp = list(name = "SLD", H = P),
-                        stopcrit = stopcrit, seed = seed)
+                        stopcrit = stopcrit, showpars = showpars, seed = seed)
 
 write.csv(results.dtlz.3$Y, file = "moeadr_fitness_moead_dtlz3_252_500_6_6.csv", row.names = FALSE)
 
 
-# ----------DTLZ 3----------
+# ----------DTLZ 7----------
 NOBJ      <- 3
 NDIM      <- 7
 MU        <- 92
@@ -279,7 +310,7 @@ problem.dtlz7 <- list(name = "DTLZ7",
 results.dtlz.7 <- moead(problem = problem.dtlz7,
                         preset = preset_moead("original"),
                         decomp = list(name = "SLD", H = P),
-                        stopcrit = stopcrit, seed = seed)
+                        stopcrit = stopcrit, showpars = showpars, seed = seed)
 
 write.csv(results.dtlz.7$Y, file = "moeadr_fitness_moead_dtlz3_252_500_3_7.csv", row.names = FALSE)
 

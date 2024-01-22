@@ -220,7 +220,7 @@ res <- rmoo::rmoo(type = "real-valued",
 close(con)
 write.csv(res@fitness, file = "rmoo_fitness_nsga2_zdt3_100_500_2_5.csv", row.names = FALSE)
 
-plot(res)
+# plot(res)
 
 
 con <- file("rmoo_time_nsga3_zdt3_100_500_2_5.csv", open = "w")
@@ -242,7 +242,7 @@ res1 <- rmoo::rmoo(type = "real-valued",
 close(con)
 write.csv(res1@fitness, file = "rmoo_fitness_nsga3_zdt3_100_500_2_5.csv", row.names = FALSE)
 
-plot(res1)
+# plot(res1)
 
 # opt <- read.csv("C:/Users/Maria/Downloads/Tesis/Simulaciones/resultados/ZDT/deap_nsga2_zdt3.csv")
 
@@ -422,7 +422,7 @@ res <- rmoo::rmoo(type = "real-valued",
 close(con)
 write.csv(res@fitness, file = "rmoo_fitness_nsga2_zdt6_100_500_2_10.csv", row.names = FALSE)
 
-plot(res)
+# plot(res)
 
 con <- file("rmoo_time_nsga3_zdt6_100_500_2_10.csv", open = "w")
 res1 <- rmoo::rmoo(type = "real-valued",
@@ -441,9 +441,8 @@ res1 <- rmoo::rmoo(type = "real-valued",
                    parallel = FALSE,
                    seed = 9)
 close(con)
-plot(res1, optimal = opt)
 write.csv(res1@fitness, file = "rmoo_fitness_nsga3_zdt6_100_500_2_10.csv", row.names = FALSE)
-
+# plot(res1, optimal = opt)
 
 # opt <- read.csv("C:/Users/Maria/Downloads/Tesis/Simulaciones/resultados/ZDT/pymoo_nsga2_zdt6.csv")
 

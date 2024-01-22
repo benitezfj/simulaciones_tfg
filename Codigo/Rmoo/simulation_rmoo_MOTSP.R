@@ -4,7 +4,7 @@ library(tidyverse)
 
 measure_time <- function(object, number_objectives, ...) {
   elapsed_time <- Sys.time() - start_time
-  print(paste("Iteration:", object@iter, "Elapsed Time:", elapsed_time))
+  # print(paste("Iteration:", object@iter, "Elapsed Time:", elapsed_time))
 
   write.table(data.frame("object" = object@iter, "Elapsed Time" = elapsed_time), con, sep = ",", col.names = FALSE, row.names = FALSE)
 }
@@ -42,7 +42,7 @@ P <- 12
 
 BOUND_LOW <- 1
 BOUND_UP <- 100
-NGEN = 5000
+NGEN = 500
 CXPB = 0.8
 MUTPB = 0.2
 
@@ -69,7 +69,7 @@ res <- rmoo::rmoo(type = "permutation",
                   distArray = distArray)
 close(con)
 
-write.csv(res@population, file = "rmoo_pop_nsga3_motsp_91_500_3_100.csv", row.names = FALSE)
+# write.csv(res@population, file = "rmoo_pop_nsga3_motsp_91_500_3_100.csv", row.names = FALSE)
 write.csv(res@fitness, file = "rmoo_fitness_nsga3_motsp_91_500_3_100.csv", row.names = FALSE)
 
 
@@ -92,5 +92,5 @@ res <- rmoo::rmoo(type = "permutation",
                   distArray = distArray)
 close(con)
 
-write.csv(res@population, file = "rmoo_pop_nsga2_motsp_91_500_3_100.csv", row.names = FALSE)
+# write.csv(res@population, file = "rmoo_pop_nsga2_motsp_91_500_3_100.csv", row.names = FALSE)
 write.csv(res@fitness, file = "rmoo_fitness_nsga2_motsp_91_500_3_100.csv", row.names = FALSE)

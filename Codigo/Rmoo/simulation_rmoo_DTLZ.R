@@ -3,7 +3,7 @@ library(tidyverse)
 
 measure_time <- function(object, number_objectives, ...) {
   elapsed_time <- Sys.time() - start_time
-  print(paste("Iteration:", object@iter, "Elapsed Time:", elapsed_time))
+  # print(paste("Iteration:", object@iter, "Elapsed Time:", elapsed_time))
 
   write.table(data.frame("object" = object@iter, "Elapsed Time" = elapsed_time), con, sep = ",", col.names = FALSE, row.names = FALSE)
 }
@@ -224,9 +224,9 @@ res <- rmoo::rmoo(type = "real-valued",
                   parallel = FALSE,
                   seed = 54)
 close(con)
+write.csv(res@fitness, file = "rmoo_fitness_nsga2_dtlz3_252_500_6_6.csv", row.names = FALSE)
 
 plot(res)
-write.csv(res@fitness, file = "rmoo_fitness_nsga2_dtlz3_252_500_6_6.csv", row.names = FALSE)
 
 con <- file("rmoo_time_nsga3_dtlz3_252_500_6_6.csv", open = "w")
 start_time <- Sys.time()
