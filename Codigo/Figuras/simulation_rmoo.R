@@ -4,7 +4,7 @@ library(ggplot2)
 
 measure_time <- function(object, number_objectives, ...) {
   elapsed_time <- Sys.time() - start_time
-  print(paste("Iteration:", object@iter, "Elapsed Time:", elapsed_time))
+  # print(paste("Iteration:", object@iter, "Elapsed Time:", elapsed_time))
 
   write.table(data.frame("object" = object@iter, "Elapsed Time" = elapsed_time), con, sep = ",", col.names = FALSE, row.names = FALSE)
 }
@@ -74,7 +74,7 @@ res1 <- rmoo::rmoo(type = "real-valued",
                   summary = FALSE,
                   parallel = FALSE,
                   seed = 43)
-# close(con)
+close(con)
 plot(res1)
 write.csv(res1@fitness, file = "rmoo_fitness_nsga2_zdt1_100_500_2_3.csv", row.names = FALSE)
 
@@ -167,43 +167,45 @@ zdt3 <- function(x) {
 
 
 NDIM <- 5
-# con <- file("rmoo_time_nsga3_zdt3_100_500_2_5.csv", open = "w")
-# start_time <- Sys.time()
+con <- file("rmoo_time_nsga2_zdt3_100_500_2_5.csv", open = "w")
+start_time <- Sys.time()
 res <- rmoo::rmoo(type = "real-valued",
                   algorithm = "NSGA-II",
                   fitness = zdt3,
                   lower = rep(BOUND_LOW,NDIM),
                   upper = rep(BOUND_UP,NDIM),
                   popSize = MU,
-                  maxiter = 5000,
+                  maxiter = NGEN,
                   nObj = NOBJ,
-                  pcrossover = 0.9,
-                  pmutation = 0.1,
-                  monitor = FALSE,
+                  pcrossover = CXPB,
+                  pmutation = MUTPB,
+                  monitor = measure_time,
                   summary = FALSE,
                   parallel = FALSE,
                   seed = 54)
-# close(con)
+close(con)
 plot(res, optimal=opt)
 write.csv(res@fitness, file = "rmoo_fitness_nsga2_zdt3_100_500_2_5.csv", row.names = FALSE)
 
 
+con <- file("rmoo_time_nsga3_zdt3_100_500_2_5.csv", open = "w")
+start_time <- Sys.time()
 res1 <- rmoo::rmoo(type = "real-valued",
                   algorithm = "NSGA-III",
                   fitness = zdt3,
                   lower = rep(BOUND_LOW,NDIM),
                   upper = rep(BOUND_UP,NDIM),
                   popSize = MU,
-                  maxiter = 5000,
+                  maxiter = NGEN,
                   nObj = NOBJ,
-                  pcrossover = 0.9,
-                  pmutation = 0.1,
+                  pcrossover = CXPB,
+                  pmutation = MUTPB,
+                  monitor = measure_time,
                   reference_dirs = ref_points,
-                  monitor = FALSE,
                   summary = FALSE,
                   parallel = FALSE,
                   seed = 54)
-# close(con)
+close(con)
 plot(res1, optimal=opt)
 write.csv(res1@fitness, file = "rmoo_fitness_nsga3_zdt3_100_500_2_5.csv", row.names = FALSE)
 

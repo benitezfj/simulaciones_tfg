@@ -49,7 +49,10 @@ MUTPB = 0.2
 ref_dirs <- rmoo::generate_reference_points(NOBJ, P)
 MU <- nrow(ref_dirs)
 
-con <- file("rmoo_time_nsga3_motsp_91_500_3_100.csv", open = "w")
+i <- 10
+time_file <- paste0("rmoo_time_nsga3_motsp_92_500_3_100-", i, ".csv")
+con <- file(time_file, open = "w")
+# con <- file("rmoo_time_nsga3_motsp_92_500_3_100.csv", open = "w")
 start_time <- Sys.time()
 res <- rmoo::rmoo(type = "permutation",
                   algorithm = "NSGA-III",
@@ -65,15 +68,18 @@ res <- rmoo::rmoo(type = "permutation",
                   monitor = measure_time,
                   summary = FALSE,
                   parallel = FALSE,
-                  seed = 1,
+                  seed = i,
                   distArray = distArray)
 close(con)
+# fitness_file <- paste0("rmoo_fitness_nsga3_motsp_92_500_3_100-", i, ".csv")
+# write.csv(res1@fitness, file = fitness_file, row.names = FALSE)
+# write.csv(res@population, file = "rmoo_pop_nsga3_motsp_92_500_3_100.csv", row.names = FALSE)
+# write.csv(res@fitness, file = "rmoo_fitness_nsga3_motsp_92_500_3_100.csv", row.names = FALSE)
 
-# write.csv(res@population, file = "rmoo_pop_nsga3_motsp_91_500_3_100.csv", row.names = FALSE)
-write.csv(res@fitness, file = "rmoo_fitness_nsga3_motsp_91_500_3_100.csv", row.names = FALSE)
 
-
-con <- file("rmoo_time_nsga2_motsp_91_500_3_100.csv", open = "w")
+i <- 10
+time_file <- paste0("rmoo_time_nsga2_motsp_92_500_3_100-", i, ".csv")
+con <- file(time_file, open = "w")
 start_time <- Sys.time()
 res <- rmoo::rmoo(type = "permutation",
                   algorithm = "NSGA-II",
@@ -88,9 +94,10 @@ res <- rmoo::rmoo(type = "permutation",
                   monitor = measure_time,
                   summary = FALSE,
                   parallel = FALSE,
-                  seed = 1,
+                  seed = i,
                   distArray = distArray)
 close(con)
-
-# write.csv(res@population, file = "rmoo_pop_nsga2_motsp_91_500_3_100.csv", row.names = FALSE)
-write.csv(res@fitness, file = "rmoo_fitness_nsga2_motsp_91_500_3_100.csv", row.names = FALSE)
+# fitness_file <- paste0("rmoo_fitness_nsga2_motsp_92_500_3_100-", i, ".csv")
+# write.csv(res1@fitness, file = fitness_file, row.names = FALSE)
+# write.csv(res@population, file = "rmoo_pop_nsga2_motsp_92_500_3_100.csv", row.names = FALSE)
+# write.csv(res@fitness, file = "rmoo_fitness_nsga2_motsp_92_500_3_100.csv", row.names = FALSE)

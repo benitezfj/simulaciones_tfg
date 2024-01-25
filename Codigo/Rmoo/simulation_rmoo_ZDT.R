@@ -1,13 +1,14 @@
 library(rmoo)
 library(tidyverse)
 
-measure_time <- function(object, number_objectives, ...) {
+measure_time <- function(object, number_objectives) {
   elapsed_time <- Sys.time() - start_time
-  print(paste("Iteration:", object@iter, "Elapsed Time:", elapsed_time))
+# print(paste("Iteration:", object@iter, "Elapsed Time:", elapsed_time))
 
   write.table(data.frame("object" = object@iter, "Elapsed Time" = elapsed_time), con, sep = ",", col.names = FALSE, row.names = FALSE)
 }
 
+n_iterations <- 10
 
 zdt1_pareto <- function(n_pareto_points=100) {
   return(cbind(seq(0, 1, length.out=n_pareto_points),
@@ -124,7 +125,7 @@ res1 <- rmoo::rmoo(type = "real-valued",
                    monitor = measure_time,
                    summary = FALSE,
                    parallel = FALSE,
-                   seed = 43)
+                   seed = 50)
 close(con)
 write.csv(res1@fitness, file = "rmoo_fitness_nsga2_zdt1_100_500_2_3.csv", row.names = FALSE)
 
@@ -159,30 +160,40 @@ res <- rmoo::rmoo(type = "real-valued",
                   monitor = measure_time,
                   summary = FALSE,
                   parallel = FALSE,
-                  seed = 54)
+                  seed = 45)
 close(con)
 write.csv(res@fitness, file = "rmoo_fitness_nsga3_zdt2_100_500_2_4.csv", row.names = FALSE)
 
 plot(res)
 
-con <- file("rmoo_time_nsga2_zdt2_100_500_2_4.csv", open = "w")
+
+# for (i in seq_len(n_iterations)) {
+  # con <- file("rmoo_time_nsga2_zdt2_100_500_2_4.csv", open = "w")
+i <- 10
+time_file <- paste0("rmoo_time_nsga2_zdt2_100_500_2_4-", i, ".csv")
+con <- file(time_file, open = "w")
+
 start_time <- Sys.time()
 res1 <- rmoo::rmoo(type = "real-valued",
-                   algorithm = "NSGA-II",
-                   fitness = zdt2,
-                   lower = rep(BOUND_LOW,NDIM),
-                   upper = rep(BOUND_UP,NDIM),
-                   popSize = MU,
-                   maxiter = NGEN,
-                   nObj = NOBJ,
-                   pcrossover = CXPB,
-                   pmutation = MUTPB,
-                   monitor = measure_time,
-                   summary = FALSE,
-                   parallel = FALSE,
-                   seed = 7)
+                 algorithm = "NSGA-II",
+                 fitness = zdt2,
+                 lower = rep(BOUND_LOW,NDIM),
+                 upper = rep(BOUND_UP,NDIM),
+                 popSize = MU,
+                 maxiter = NGEN,
+                 nObj = NOBJ,
+                 pcrossover = CXPB,
+                 pmutation = MUTPB,
+                 monitor = measure_time,
+                 summary = FALSE,
+                 parallel = FALSE,
+                 seed = i)
 close(con)
-write.csv(res1@fitness, file = "rmoo_fitness_nsga2_zdt2_100_500_2_4.csv", row.names = FALSE)
+
+# fitness_file <- paste0("rmoo_fitness_nsga2_zdt2_100_500_2_4-", i, ".csv")
+# write.csv(res1@fitness, file = fitness_file, row.names = FALSE)
+# cat("Iteration", i)
+# }
 
 plot(res1)
 
@@ -201,7 +212,11 @@ zdt3 <- function(x) {
 
 
 NDIM <- 5
-con <- file("rmoo_time_nsga2_zdt3_100_500_2_5.csv", open = "w")
+
+i <- 10
+time_file <- paste0("rmoo_time_nsga2_zdt3_100_500_2_5-", i, ".csv")
+con <- file(time_file, open = "w")
+# con <- file("rmoo_time_nsga2_zdt3_100_500_2_5-.csv", open = "w")
 start_time <- Sys.time()
 res <- rmoo::rmoo(type = "real-valued",
                   algorithm = "NSGA-II",
@@ -216,14 +231,20 @@ res <- rmoo::rmoo(type = "real-valued",
                   monitor = measure_time,
                   summary = FALSE,
                   parallel = FALSE,
-                  seed = 54)
+                  seed = i)
 close(con)
-write.csv(res@fitness, file = "rmoo_fitness_nsga2_zdt3_100_500_2_5.csv", row.names = FALSE)
+# fitness_file <- paste0("rmoo_fitness_nsga2_zdt3_100_500_2_5-", i, ".csv")
+# write.csv(res1@fitness, file = fitness_file, row.names = FALSE)
+# cat("Iteration", i)
+# }
+# write.csv(res@fitness, file = "rmoo_fitness_nsga2_zdt3_100_500_2_5.csv", row.names = FALSE)
 
 # plot(res)
 
-
-con <- file("rmoo_time_nsga3_zdt3_100_500_2_5.csv", open = "w")
+i <- 10
+time_file <- paste0("rmoo_time_nsga3_zdt3_100_500_2_5-", i, ".csv")
+con <- file(time_file, open = "w")
+# con <- file("rmoo_time_nsga3_zdt3_100_500_2_5.csv", open = "w")
 res1 <- rmoo::rmoo(type = "real-valued",
                    algorithm = "NSGA-III",
                    fitness = zdt3,
@@ -238,11 +259,15 @@ res1 <- rmoo::rmoo(type = "real-valued",
                    monitor = measure_time,
                    summary = FALSE,
                    parallel = FALSE,
-                   seed = 54)
+                   seed = i)
 close(con)
-write.csv(res1@fitness, file = "rmoo_fitness_nsga3_zdt3_100_500_2_5.csv", row.names = FALSE)
+# fitness_file <- paste0("rmoo_fitness_nsga3_zdt3_100_500_2_5-", i, ".csv")
+# write.csv(res1@fitness, file = fitness_file, row.names = FALSE)
+# cat("Iteration", i)
+# }
+# write.csv(res1@fitness, file = "rmoo_fitness_nsga3_zdt3_100_500_2_5.csv", row.names = FALSE)
 
-# plot(res1)
+plot(res1)
 
 # opt <- read.csv("C:/Users/Maria/Downloads/Tesis/Simulaciones/resultados/ZDT/deap_nsga2_zdt3.csv")
 
@@ -258,7 +283,11 @@ zdt4 <- function(x) {
 }
 
 NDIM <- 7
-con <- file("rmoo_time_nsga2_zdt4_100_500_2_7.csv", open = "w")
+
+i <- 10
+time_file <- paste0("rmoo_time_nsga2_zdt4_100_500_2_7-", i, ".csv")
+con <- file(time_file, open = "w")
+# con <- file("rmoo_time_nsga2_zdt4_100_500_2_7.csv", open = "w")
 start_time <- Sys.time()
 res <- rmoo::rmoo(type = "real-valued",
                   algorithm = "NSGA-II",
@@ -273,13 +302,20 @@ res <- rmoo::rmoo(type = "real-valued",
                   monitor = measure_time,
                   summary = FALSE,
                   parallel = FALSE,
-                  seed = 54)
+                  seed = i)
 close(con)
-write.csv(res@fitness, file = "rmoo_fitness_nsga2_zdt4_100_500_2_7.csv", row.names = FALSE)
+# fitness_file <- paste0("rmoo_fitness_nsga2_zdt4_100_500_2_7-", i, ".csv")
+# write.csv(res1@fitness, file = fitness_file, row.names = FALSE)
+# cat("Iteration", i)
+# }
+# write.csv(res@fitness, file = "rmoo_fitness_nsga2_zdt4_100_500_2_7.csv", row.names = FALSE)
 
 plot(res)
 
-con <- file("rmoo_time_nsga3_zdt4_100_500_2_7.csv", open = "w")
+i <- 10
+time_file <- paste0("rmoo_time_nsga3_zdt4_100_500_2_7-", i, ".csv")
+con <- file(time_file, open = "w")
+# con <- file("rmoo_time_nsga3_zdt4_100_500_2_7.csv", open = "w")
 start_time <- Sys.time()
 res1 <- rmoo::rmoo(type = "real-valued",
                    algorithm = "NSGA-III",
@@ -297,7 +333,11 @@ res1 <- rmoo::rmoo(type = "real-valued",
                    parallel = FALSE,
                    seed = 54)
 close(con)
-write.csv(res1@fitness, file = "rmoo_fitness_nsga3_zdt4_100_500_2_7.csv", row.names = FALSE)
+# fitness_file <- paste0("rmoo_fitness_nsga3_zdt4_100_500_2_7-", i, ".csv")
+# write.csv(res1@fitness, file = fitness_file, row.names = FALSE)
+# cat("Iteration", i)
+# }
+# write.csv(res1@fitness, file = "rmoo_fitness_nsga3_zdt4_100_500_2_7.csv", row.names = FALSE)
 
 plot(res1)
 
@@ -348,7 +388,11 @@ zdt5 <- function (x, m = 10, n = 5, normal = TRUE, ...) {
 }
 
 NDIM <- 80
-con <- file("rmoo_time_nsga3_zdt5_100_500_2_80.csv", open = "w")
+
+i <- 10
+time_file <- paste0("rmoo_time_nsga3_zdt5_100_500_2_80-", i, ".csv")
+con <- file(time_file, open = "w")
+# con <- file("rmoo_time_nsga3_zdt5_100_500_2_80.csv", open = "w")
 start_time <- Sys.time()
 res <- rmoo(type = "binary",
             fitness = zdt5,
@@ -364,14 +408,21 @@ res <- rmoo(type = "binary",
             reference_dirs = ref_points,
             monitor = measure_time,
             summary = FALSE,
-            seed = 1)
+            seed = i)
 close(con)
-write.csv(res@fitness, file = "rmoo_fitness_nsga3_zdt5_100_500_2_80.csv", row.names = FALSE)
+# fitness_file <- paste0("rmoo_fitness_nsga3_zdt5_100_500_2_80-", i, ".csv")
+# write.csv(res1@fitness, file = fitness_file, row.names = FALSE)
+# cat("Iteration", i)
+# }
+# write.csv(res@fitness, file = "rmoo_fitness_nsga3_zdt5_100_500_2_80.csv", row.names = FALSE)
 
 plot(res)
 
 
-con <- file("rmoo_time_nsga2_zdt5_100_500_2_80.csv", open = "w")
+i <- 10
+time_file <- paste0("rmoo_time_nsga2_zdt5_100_500_2_80-", i, ".csv")
+con <- file(time_file, open = "w")
+# con <- file("rmoo_time_nsga2_zdt5_100_500_2_80.csv", open = "w")
 start_time <- Sys.time()
 res1 <- rmoo(type = "binary",
             fitness = zdt5,
@@ -386,9 +437,13 @@ res1 <- rmoo(type = "binary",
             pmutation = MUTPB,
             monitor = measure_time,
             summary = FALSE,
-            seed = 1)
+            seed = i)
 close(con)
-write.csv(res1@fitness, file = "rmoo_fitness_nsga2_zdt5_100_500_2_80.csv", row.names = FALSE)
+# fitness_file <- paste0("rmoo_fitness_nsga2_zdt5_100_500_2_80-", i, ".csv")
+# write.csv(res1@fitness, file = fitness_file, row.names = FALSE)
+# cat("Iteration", i)
+# }
+# write.csv(res1@fitness, file = "rmoo_fitness_nsga2_zdt5_100_500_2_80.csv", row.names = FALSE)
 
 plot(res1)
 
@@ -403,7 +458,11 @@ zdt6 <- function(x) {
 }
 
 NDIM <- 10
-con <- file("rmoo_time_nsga2_zdt6_100_500_2_10.csv", open = "w")
+
+i <- 10
+time_file <- paste0("rmoo_time_nsga2_zdt6_100_500_2_10-", i, ".csv")
+con <- file(time_file, open = "w")
+# con <- file("rmoo_time_nsga2_zdt6_100_500_2_10.csv", open = "w")
 start_time <- Sys.time()
 res <- rmoo::rmoo(type = "real-valued",
                   algorithm = "NSGA-II",
@@ -418,13 +477,21 @@ res <- rmoo::rmoo(type = "real-valued",
                   monitor = measure_time,
                   summary = FALSE,
                   parallel = FALSE,
-                  seed = 274)
+                  seed = i)
 close(con)
-write.csv(res@fitness, file = "rmoo_fitness_nsga2_zdt6_100_500_2_10.csv", row.names = FALSE)
+# fitness_file <- paste0("rmoo_fitness_nsga2_zdt6_100_500_2_10-", i, ".csv")
+# write.csv(res1@fitness, file = fitness_file, row.names = FALSE)
+# cat("Iteration", i)
+# }
+# write.csv(res@fitness, file = "rmoo_fitness_nsga2_zdt6_100_500_2_10.csv", row.names = FALSE)
 
 # plot(res)
 
-con <- file("rmoo_time_nsga3_zdt6_100_500_2_10.csv", open = "w")
+i <- 10
+time_file <- paste0("rmoo_time_nsga3_zdt6_100_500_2_10-", i, ".csv")
+con <- file(time_file, open = "w")
+# con <- file("rmoo_time_nsga3_zdt6_100_500_2_10.csv", open = "w")
+start_time <- Sys.time()
 res1 <- rmoo::rmoo(type = "real-valued",
                    algorithm = "NSGA-III",
                    fitness = zdt6,
@@ -439,9 +506,13 @@ res1 <- rmoo::rmoo(type = "real-valued",
                    reference_dirs = ref_points,
                    summary = FALSE,
                    parallel = FALSE,
-                   seed = 9)
+                   seed = i)
 close(con)
-write.csv(res1@fitness, file = "rmoo_fitness_nsga3_zdt6_100_500_2_10.csv", row.names = FALSE)
+# fitness_file <- paste0("rmoo_fitness_nsga2_zdt5_100_500_2_80-", i, ".csv")
+# write.csv(res1@fitness, file = fitness_file, row.names = FALSE)
+# cat("Iteration", i)
+# }
+# write.csv(res1@fitness, file = "rmoo_fitness_nsga3_zdt6_100_500_2_10.csv", row.names = FALSE)
 # plot(res1, optimal = opt)
 
 # opt <- read.csv("C:/Users/Maria/Downloads/Tesis/Simulaciones/resultados/ZDT/pymoo_nsga2_zdt6.csv")

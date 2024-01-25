@@ -294,7 +294,7 @@ write.csv(results.dtlz.3$Y, file = "moeadr_fitness_moead_dtlz3_252_500_6_6.csv",
 
 # ----------DTLZ 7----------
 NOBJ      <- 3
-NDIM      <- 7
+NDIM      <- 10
 MU        <- 92
 P <- 12
 
@@ -312,5 +312,5 @@ results.dtlz.7 <- moead(problem = problem.dtlz7,
                         decomp = list(name = "SLD", H = P),
                         stopcrit = stopcrit, showpars = showpars, seed = seed)
 
-write.csv(results.dtlz.7$Y, file = "moeadr_fitness_moead_dtlz3_252_500_3_7.csv", row.names = FALSE)
+write.csv(results.dtlz.7$Y, file = "moeadr_fitness_moead_dtlz3_252_500_3_10.csv", row.names = FALSE)
 

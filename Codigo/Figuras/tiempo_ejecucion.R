@@ -24,13 +24,13 @@ ggplot(all_data, aes(x=f1, y=f2, color=framework, shape=framework)) +
 
 
 # Read the data from the CSV files
-deap.nsga2 <- read.csv("C:/Users/Maria/Downloads/Tesis/Simulaciones/Many Objective/DEAP/deap_time_nsga2_motsp_92_500_3_100.csv")
-deap.nsga3 <- read.csv("C:/Users/Maria/Downloads/Tesis/Simulaciones/Many Objective/DEAP/deap_time_nsga3_motsp_92_500_3_100.csv")
-pymoo.nsga2 <- read.csv("C:/Users/Maria/Downloads/Tesis/Simulaciones/Many Objective/pymoo/pymoo_time_nsga2_motsp_92_500_3_100.csv")
-pymoo.nsga3 <- read.csv("C:/Users/Maria/Downloads/Tesis/Simulaciones/Many Objective/pymoo/pymoo_time_nsga3_motsp_92_500_3_100.csv")
-rmoo.nsga2 <- read.csv("C:/Users/Maria/Downloads/Tesis/Simulaciones/Many Objective/rmoo/rmoo_time_nsga2_motsp_92_500_3_100.csv")
-rmoo.nsga3 <- read.csv("C:/Users/Maria/Downloads/Tesis/Simulaciones/Many Objective/rmoo/rmoo_time_nsga3_motsp_92_500_3_100.csv")
-# moeadr.moead <- read.csv("C:/Users/Maria/Downloads/Tesis/Simulaciones/Many Objective/MOEADr/moeadr_time_moead_dtlz7_92_500_3_10.csv")
+deap.nsga2 <- read.csv("C:/Users/Maria/Downloads/Tesis/Simulaciones/Multi-objective/DEAP/deap_time_nsga2_zdt5_100_500_2_80.csv")
+deap.nsga3 <- read.csv("C:/Users/Maria/Downloads/Tesis/Simulaciones/Multi-objective/DEAP/deap_time_nsga3_zdt5_100_500_2_80.csv")
+pymoo.nsga2 <- read.csv("C:/Users/Maria/Downloads/Tesis/Simulaciones/Multi-objective/pymoo/pymoo_time_nsga2_zdt5_100_500_2_80.csv")
+pymoo.nsga3 <- read.csv("C:/Users/Maria/Downloads/Tesis/Simulaciones/Multi-objective/pymoo/pymoo_time_nsga3_zdt5_100_500_2_80.csv")
+rmoo.nsga2 <- read.csv("C:/Users/Maria/Downloads/Tesis/Simulaciones/Multi-objective/rmoo/rmoo_time_nsga2_zdt5_100_500_2_80.csv")
+rmoo.nsga3 <- read.csv("C:/Users/Maria/Downloads/Tesis/Simulaciones/Multi-objective/rmoo/rmoo_time_nsga3_zdt5_100_500_2_80.csv")
+# moeadr.moead <- read.csv("C:/Users/Maria/Downloads/Tesis/Simulaciones/Many Objective/MOEADr/moeadr_time_moead_motsp_92_500_3_100.csv")
 
 # Add a new column to each data frame that represents the framework
 rmoo.nsga2$Framework <- "RMOO-NSGA-II"
@@ -39,7 +39,17 @@ pymoo.nsga2$Framework <- "PYMOO-NSGA-II"
 pymoo.nsga3$Framework <- "PYMOO-NSGA-III"
 deap.nsga3$Framework <- "DEAP-NSGA-III"
 deap.nsga2$Framework <- "DEAP-NSGA-II"
-moeadr.moead$Framework <- "MOEADr-MOEA/D"
+# moeadr.moead$Framework <- "MOEADr-MOEA/D"
+
+framework_colors <- c("RMOO-NSGA-II" = "#baa6ff",
+"RMOO-NSGA-III" = "#fc89e0",
+"PYMOO-NSGA-II" = "#41d0ae",
+"PYMOO-NSGA-III" = "#40c9f1",
+"DEAP-NSGA-II" = "#fa9990",
+"DEAP-NSGA-III" = "#d3b241",
+"MOEADr-MOEA/D" = "#7ec740")
+
+
 # Combine all the data frames into one
 combined_data <- rbind(rmoo.nsga2,
                        rmoo.nsga3,
@@ -52,11 +62,19 @@ combined_data <- rbind(rmoo.nsga2,
 # Create the plot
 ggplot(combined_data, aes(x=Generacion, y=Tiempo, color=Framework)) +
   geom_line() +
-  labs(title="Tiempos de Ejecución en MOTSP",
+  labs(title="Tiempos de Ejecución en DTLZ 1",
        x="Generación",
        y="Tiempo Ejecución (Seg.)",
-       color="Framework")
+       color="Framework") + theme_minimal()
 
+
+ggplot(combined_data, aes(x=Generacion, y=Tiempo, color=Framework)) +
+  geom_line() +
+  scale_color_manual(values = framework_colors) +
+  labs(title="Tiempos de Ejecución en ZDT 5",
+       x="Generación",
+       y="Tiempo Ejecución (Seg.)",
+       color="Framework") + theme_minimal()
 
 rm(rmoo.nsga2,
       rmoo.nsga3,

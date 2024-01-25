@@ -61,7 +61,10 @@ P <- 12
 ref_dirs <- rmoo::generate_reference_points(NOBJ, P)
 MU <- nrow(ref_dirs)
 
-con <- file("rmoo_time_nsga2_dtlz1_92_500_3_4.csv", open = "w")
+i <- 10
+time_file <- paste0("rmoo_time_nsga2_dtlz1_92_500_3_4-", i, ".csv")
+con <- file(time_file, open = "w")
+# con <- file("rmoo_time_nsga2_dtlz1_92_500_3_4.csv", open = "w")
 start_time <- Sys.time()
 res <- rmoo::rmoo(type = "real-valued",
                   algorithm = "NSGA-II",
@@ -76,14 +79,19 @@ res <- rmoo::rmoo(type = "real-valued",
                   monitor = measure_time,
                   summary = FALSE,
                   parallel = FALSE,
-                  seed = 54)
+                  seed = i)
 close(con)
-write.csv(res@fitness, file = "rmoo_fitness_nsga2_dtlz1_92_500_3_4.csv", row.names = FALSE)
+# fitness_file <- paste0("rmoo_fitness_nsga2_dtlz1_92_500_3_4-", i, ".csv")
+# write.csv(res1@fitness, file = fitness_file, row.names = FALSE)
+# write.csv(res@fitness, file = "rmoo_fitness_nsga2_dtlz1_92_500_3_4.csv", row.names = FALSE)
 
 plot(res)
 
 
-con <- file("rmoo_time_nsga3_dtlz1_92_500_3_4.csv", open = "w")
+i <- 10
+time_file <- paste0("rmoo_time_nsga3_dtlz1_92_500_3_4-", i, ".csv")
+con <- file(time_file, open = "w")
+# con <- file("rmoo_time_nsga3_dtlz1_92_500_3_4.csv", open = "w")
 start_time <- Sys.time()
 res1 <- rmoo::rmoo(type = "real-valued",
                    algorithm = "NSGA-III",
@@ -99,9 +107,11 @@ res1 <- rmoo::rmoo(type = "real-valued",
                    monitor = measure_time,
                    summary = FALSE,
                    parallel = FALSE,
-                   seed = 73)
+                   seed = i)
 close(con)
-write.csv(res1@fitness, file = "rmoo_fitness_nsga3_dtlz1_92_500_3_4.csv", row.names = FALSE)
+# fitness_file <- paste0("rmoo_fitness_nsga3_dtlz1_92_500_3_4-", i, ".csv")
+# write.csv(res1@fitness, file = fitness_file, row.names = FALSE)
+# write.csv(res1@fitness, file = "rmoo_fitness_nsga3_dtlz1_92_500_3_4.csv", row.names = FALSE)
 
 plot(res1)
 
@@ -137,7 +147,10 @@ P <- 7
 ref_dirs <- rmoo::generate_reference_points(NOBJ, P)
 MU <- nrow(ref_dirs)
 
-con <- file("rmoo_time_nsga2_dtlz2_120_500_4_5.csv", open = "w")
+i <- 10
+time_file <- paste0("rmoo_time_nsga2_dtlz2_120_500_4_5-", i, ".csv")
+con <- file(time_file, open = "w")
+# con <- file("rmoo_time_nsga2_dtlz2_120_500_4_5.csv", open = "w")
 start_time <- Sys.time()
 res <- rmoo::rmoo(type = "real-valued",
                   fitness = dtlz2,
@@ -152,11 +165,16 @@ res <- rmoo::rmoo(type = "real-valued",
                   monitor = measure_time,
                   summary = FALSE,
                   parallel = FALSE,
-                  seed = 1)
+                  seed = i)
 close(con)
-write.csv(res@fitness, file = "rmoo_fitness_nsga2_dtlz2_120_500_4_5.csv", row.names = FALSE)
+# fitness_file <- paste0("rmoo_fitness_nsga2_dtlz2_120_500_4_5-", i, ".csv")
+# write.csv(res1@fitness, file = fitness_file, row.names = FALSE)
+# write.csv(res@fitness, file = "rmoo_fitness_nsga2_dtlz2_120_500_4_5.csv", row.names = FALSE)
 
-con <- file("rmoo_time_nsga3_dtlz2_120_500_4_5.csv", open = "w")
+i <- 10
+time_file <- paste0("rmoo_time_nsga3_dtlz2_120_500_4_5-", i, ".csv")
+con <- file(time_file, open = "w")
+# con <- file("rmoo_time_nsga3_dtlz2_120_500_4_5.csv", open = "w")
 start_time <- Sys.time()
 res <- rmoo::rmoo(type = "real-valued",
                   fitness = dtlz2,
@@ -172,9 +190,11 @@ res <- rmoo::rmoo(type = "real-valued",
                   monitor = measure_time,
                   summary = FALSE,
                   parallel = FALSE,
-                  seed = 1)
+                  seed = i)
 close(con)
-write.csv(res@fitness, file = "rmoo_fitness_nsga3_dtlz2_120_500_4_5.csv", row.names = FALSE)
+# fitness_file <- paste0("rmoo_fitness_nsga3_dtlz2_120_500_4_5-", i, ".csv")
+# write.csv(res1@fitness, file = fitness_file, row.names = FALSE)
+# write.csv(res@fitness, file = "rmoo_fitness_nsga3_dtlz2_120_500_4_5.csv", row.names = FALSE)
 
 
 
@@ -207,7 +227,10 @@ P <- 5
 ref_dirs <- rmoo::generate_reference_points(NOBJ, P)
 MU <- nrow(ref_dirs)
 
-con <- file("rmoo_time_nsga2_dtlz3_252_500_6_6.csv", open = "w")
+i <- 10
+time_file <- paste0("rmoo_time_nsga2_dtlz3_252_500_6_6-", i, ".csv")
+con <- file(time_file, open = "w")
+# con <- file("rmoo_time_nsga2_dtlz3_252_500_6_6.csv", open = "w")
 start_time <- Sys.time()
 res <- rmoo::rmoo(type = "real-valued",
                   algorithm = "NSGA-II",
@@ -222,13 +245,18 @@ res <- rmoo::rmoo(type = "real-valued",
                   monitor = measure_time,
                   summary = FALSE,
                   parallel = FALSE,
-                  seed = 54)
+                  seed = i)
 close(con)
-write.csv(res@fitness, file = "rmoo_fitness_nsga2_dtlz3_252_500_6_6.csv", row.names = FALSE)
+# fitness_file <- paste0("rmoo_fitness_nsga2_dtlz3_252_500_6_6-", i, ".csv")
+# write.csv(res1@fitness, file = fitness_file, row.names = FALSE)
+# write.csv(res@fitness, file = "rmoo_fitness_nsga2_dtlz3_252_500_6_6.csv", row.names = FALSE)
 
 plot(res)
 
-con <- file("rmoo_time_nsga3_dtlz3_252_500_6_6.csv", open = "w")
+i <- 10
+time_file <- paste0("rmoo_time_nsga3_dtlz3_252_500_6_6-", i, ".csv")
+con <- file(time_file, open = "w")
+# con <- file("rmoo_time_nsga3_dtlz3_252_500_6_6.csv", open = "w")
 start_time <- Sys.time()
 res1 <- rmoo::rmoo(type = "real-valued",
                   algorithm = "NSGA-III",
@@ -244,9 +272,11 @@ res1 <- rmoo::rmoo(type = "real-valued",
                   monitor = measure_time,
                   summary = FALSE,
                   parallel = FALSE,
-                  seed = 54)
+                  seed = i)
 close(con)
-write.csv(res1@fitness, file = "rmoo_fitness_nsga3_dtlz3_252_500_6_6.csv", row.names = FALSE)
+# fitness_file <- paste0("rmoo_fitness_nsga3_dtlz3_252_500_6_6-", i, ".csv")
+# write.csv(res1@fitness, file = fitness_file, row.names = FALSE)
+# write.csv(res1@fitness, file = "rmoo_fitness_nsga3_dtlz3_252_500_6_6.csv", row.names = FALSE)
 
 plot(res1)
 
@@ -273,7 +303,10 @@ P <- 12
 ref_dirs <- rmoo::generate_reference_points(NOBJ, P)
 MU <- nrow(ref_dirs)
 
-con <- file("rmoo_time_nsga2_dtlz7_92_500_3_10.csv", open = "w")
+i <- 10
+time_file <- paste0("rmoo_time_nsga2_dtlz7_92_500_3_10-", i, ".csv")
+con <- file(time_file, open = "w")
+# con <- file("rmoo_time_nsga2_dtlz7_92_500_3_10.csv", open = "w")
 start_time <- Sys.time()
 res <- rmoo::rmoo(type = "real-valued",
                   algorithm = "NSGA-II",
@@ -288,15 +321,20 @@ res <- rmoo::rmoo(type = "real-valued",
                   monitor = measure_time,
                   summary = FALSE,
                   parallel = FALSE,
-                  seed = 54)
+                  seed = i)
 close(con)
-write.csv(res@fitness, file = "rmoo_fitness_nsga2_dtlz7_92_500_3_10.csv", row.names = FALSE)
+# fitness_file <- paste0("rmoo_fitness_nsga2_dtlz7_92_500_3_10-", i, ".csv")
+# write.csv(res1@fitness, file = fitness_file, row.names = FALSE)
+# write.csv(res@fitness, file = "rmoo_fitness_nsga2_dtlz7_92_500_3_10.csv", row.names = FALSE)
 
 plot(res)
 plot(res, type="pcp")
 
 
-con <- file("rmoo_time_nsga3_dtlz7_92_500_3_10.csv", open = "w")
+i <- 10
+time_file <- paste0("rmoo_time_nsga3_dtlz7_92_500_3_10-", i, ".csv")
+con <- file(time_file, open = "w")
+# con <- file("rmoo_time_nsga3_dtlz7_92_500_3_10.csv", open = "w")
 start_time <- Sys.time()
 res1 <- rmoo::rmoo(type = "real-valued",
                    algorithm = "NSGA-III",
@@ -312,9 +350,11 @@ res1 <- rmoo::rmoo(type = "real-valued",
                    monitor = measure_time,
                    summary = FALSE,
                    parallel = FALSE,
-                   seed = 54)
+                   seed = i)
 close(con)
-write.csv(res1@fitness, file = "rmoo_fitness_nsga3_dtlz7_92_500_3_10.csv", row.names = FALSE)
+# fitness_file <- paste0("rmoo_fitness_nsga3_dtlz7_92_500_3_10-", i, ".csv")
+# write.csv(res1@fitness, file = fitness_file, row.names = FALSE)
+# write.csv(res1@fitness, file = "rmoo_fitness_nsga3_dtlz7_92_500_3_10.csv", row.names = FALSE)
 
 plot(res1)
 plot(res1, type="pcp")
