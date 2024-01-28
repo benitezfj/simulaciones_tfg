@@ -1705,3 +1705,782 @@ base_f + theme(
     linewidth = 1
   )
 )
+
+
+
+
+#---------------------------ZDT----------------------------
+library(rmoo)
+library(tidyverse)
+
+rmoobin_fbMutation <- function(object, parent, indpb=0.2) {
+  mutate <- parent <- as.vector(object@population[parent, ])
+
+  mutate <- as.logical(mutate)
+  for (i in seq_along(parent)) {
+    if (runif(1) < indpb) {
+      mutate[i] <- !mutate[i]
+    }
+  }
+  mutate <- as.numeric(mutate)
+  storage.mode(mutate) <- "integer"
+  return(mutate)
+}
+
+
+pointCrossover <- function(object, parents, n_points=2) {
+  parents <- object@population[parents, ]
+  n_matings <- nrow(parents)
+  n <- ncol(parents)
+
+  fitnessChildren <- matrix(NA_real_, ncol = ncol(object@fitness))
+
+  r <- t(replicate(n_matings, sample(n - 1)))
+  r <- r[, 1:n_points]
+  r <- apply(r, 1, sort)
+  r <- cbind(r, rep(n, n_matings))
+
+  M <- matrix(FALSE, nrow = n_matings, ncol = n)
+
+  for (i in seq_len(n_matings)) {
+    j <- 1
+    while (j < (ncol(r) - 1)) {
+      a <- r[i, j]
+      b <- r[i, j + 1]
+      M[i, a:b] <- TRUE
+      j <- j + 1
+    }
+  }
+
+  children <- crossover_mask(parents, M)
+
+  storage.mode(children) <- "integer"
+  out <- list(children = children,
+              fitness = fitnessChildren)
+  return(out)
+}
+
+
+crossover_mask <- function(X, M) {
+  parent <- X
+  parent[1,][M[2,]] <- X[2,][M[2,]]
+  parent[2,][M[1,]] <- X[1,][M[1,]]
+  return(parent)
+}
+
+zdt1_pareto <- function(n_pareto_points=100) {
+  return(cbind(seq(0, 1, length.out=n_pareto_points),
+               1 - sqrt(seq(0, 1, length.out=n_pareto_points))))
+}
+
+zdt2_pareto <- function(n_pareto_points=100) {
+  return(cbind(seq(0, 1, length.out=n_pareto_points), 1 - (seq(0, 1, length.out=n_pareto_points))^2))
+}
+
+zdt3_pareto <- function(n_points=100, flatten=TRUE) {
+  regions <- list(c(0, 0.0830015349),
+                  c(0.182228780, 0.2577623634),
+                  c(0.4093136748, 0.4538821041),
+                  c(0.6183967944, 0.6525117038),
+                  c(0.8233317983, 0.8518328654))
+
+  pf <- list()
+
+  for (r in regions) {
+    x1 <- seq(r[1], r[2], length.out=n_points / length(regions))
+    x2 <- 1 - sqrt(x1) - x1 * sin(10 * pi * x1)
+    pf[[length(pf)+1]] <- cbind(x1, x2)
+  }
+
+  if (flatten) {
+    pf <- do.call(rbind, pf)
+  }
+
+  return(pf)
+}
+
+zdt4_pareto <- function(n_pareto_points=100) {
+  return(cbind(seq(0, 1, length.out=n_pareto_points),
+               1 - sqrt(seq(0, 1, length.out=n_pareto_points))))
+}
+
+zdt5_pareto <- function(n_pareto_points=100, m = 11) {
+  x <- 1 + seq(0, 1, (1 - 0)/n_pareto_points) * 30
+  pf <- cbind(x, (m - 1)/x)
+  normalize <- function(x) {
+    x_min <- min(x)
+    x_max <- max(x)
+    denom <- x_max - x_min
+    denom <- denom + 1e-30
+    N <- (x - x_min) / denom
+    return(N)
+  }
+  pf <- normalize(x = pf)
+  return(pf)
+}
+
+zdt6_pareto <- function(n_pareto_points=100) {
+  x <- seq(0.2807753191, 1, length.out=n_pareto_points)
+  return(cbind(x, 1 - x^2))
+}
+
+n_iterations <- 10
+
+for (i in seq_len(n_iterations)) {
+
+  NOBJ <- 2
+  MU <- 100
+  BOUND_LOW <- 0
+  BOUND_UP <- 1
+  NGEN = 500
+  CXPB = 0.8
+  MUTPB = 0.2
+  ref_points <- generate_reference_points(2,99)
+
+
+  zdt1 <- function(x) {
+    n = length(x)
+    f1 = x[1]
+    g = 1 + 9 * sum(x[2:n])/(n - 1)
+    h = 1 - sqrt(f1/g)
+    f2 = g * h
+    return(c(f1, f2))
+  }
+
+
+  NDIM <- 3
+  res <- rmoo::rmoo(type = "real-valued",
+                    algorithm = "NSGA-III",
+                    fitness = zdt1,
+                    lower = rep(BOUND_LOW,NDIM),
+                    upper = rep(BOUND_UP,NDIM),
+                    popSize = MU,
+                    maxiter = NGEN,
+                    nObj = NOBJ,
+                    pcrossover = CXPB,
+                    pmutation = MUTPB,
+                    reference_dirs = ref_points,
+                    monitor = FALSE,
+                    summary = FALSE,
+                    parallel = FALSE,
+                    seed = i)
+
+  write.csv(res1@fitness, file = paste0("rmoo_fitness_nsga3_zdt1_100_500_2_3-", i, ".csv"), row.names = FALSE)
+
+  res1 <- rmoo::rmoo(type = "real-valued",
+                     algorithm = "NSGA-II",
+                     fitness = zdt1,
+                     lower = rep(BOUND_LOW,NDIM),
+                     upper = rep(BOUND_UP,NDIM),
+                     popSize = MU,
+                     maxiter = NGEN,
+                     nObj = NOBJ,
+                     pcrossover = CXPB,
+                     pmutation = MUTPB,
+                     monitor = FALSE,
+                     summary = FALSE,
+                     parallel = FALSE,
+                     seed = i)
+
+  write.csv(res1@fitness, file = paste0("rmoo_fitness_nsga2_zdt1_100_500_2_3-", i, ".csv"), row.names = FALSE)
+
+
+  zdt2 <- function(x) {
+    n = length(x)
+    f1 = x[1]
+    g = 1 + 9 * sum(x[2:n])/(n - 1)
+    h = 1 - (f1/g)^2
+    f2 = g * h
+    return(c(f1, f2))
+  }
+
+  NDIM <- 4
+
+  res <- rmoo::rmoo(type = "real-valued",
+                    algorithm = "NSGA-III",
+                    fitness = zdt2,
+                    lower = rep(BOUND_LOW,NDIM),
+                    upper = rep(BOUND_UP,NDIM),
+                    popSize = MU,
+                    maxiter = NGEN,
+                    nObj = NOBJ,
+                    pcrossover = CXPB,
+                    pmutation = MUTPB,
+                    reference_dirs = ref_points,
+                    monitor = FALSE,
+                    summary = FALSE,
+                    parallel = FALSE,
+                    seed = i)
+
+  write.csv(res@fitness, file = paste0("rmoo_fitness_nsga3_zdt2_100_500_2_4-", i, ".csv"), row.names = FALSE)
+
+
+  res1 <- rmoo::rmoo(type = "real-valued",
+                     algorithm = "NSGA-II",
+                     fitness = zdt2,
+                     lower = rep(BOUND_LOW,NDIM),
+                     upper = rep(BOUND_UP,NDIM),
+                     popSize = MU,
+                     maxiter = NGEN,
+                     nObj = NOBJ,
+                     pcrossover = CXPB,
+                     pmutation = MUTPB,
+                     monitor = FALSE,
+                     summary = FALSE,
+                     parallel = FALSE,
+                     seed = i)
+  write.csv(res1@fitness, file = paste0("rmoo_fitness_nsga2_zdt2_100_500_2_4-", i, ".csv"), row.names = FALSE)
+
+
+  zdt3 <- function(x) {
+    n = length(x)
+    f1 = x[1]
+    g = 1 + 9 * sum(x[2:n])/(n - 1)
+    h = 1 - sqrt(f1/g) - (f1/g) * sin(10 * pi * f1)
+    f2 = g * h
+    return(c(f1, f2))
+  }
+
+
+  NDIM <- 5
+  res <- rmoo::rmoo(type = "real-valued",
+                    algorithm = "NSGA-II",
+                    fitness = zdt3,
+                    lower = rep(BOUND_LOW,NDIM),
+                    upper = rep(BOUND_UP,NDIM),
+                    popSize = MU,
+                    maxiter = NGEN,
+                    nObj = NOBJ,
+                    pcrossover = CXPB,
+                    pmutation = MUTPB,
+                    monitor = FALSE,
+                    summary = FALSE,
+                    parallel = FALSE,
+                    seed = i)
+  write.csv(res@fitness, file = paste0("rmoo_fitness_nsga2_zdt3_100_500_2_5-", i, ".csv"), row.names = FALSE)
+
+  res1 <- rmoo::rmoo(type = "real-valued",
+                     algorithm = "NSGA-III",
+                     fitness = zdt3,
+                     lower = rep(BOUND_LOW,NDIM),
+                     upper = rep(BOUND_UP,NDIM),
+                     popSize = MU,
+                     maxiter = NGEN,
+                     nObj = NOBJ,
+                     pcrossover = CXPB,
+                     pmutation = MUTPB,
+                     reference_dirs = ref_points,
+                     monitor = FALSE,
+                     summary = FALSE,
+                     parallel = FALSE,
+                     seed = i)
+  write.csv(res1@fitness, file = paste0("rmoo_fitness_nsga3_zdt3_100_500_2_5-", i, ".csv"), row.names = FALSE)
+
+  zdt4 <- function(x) {
+    n = length(x)
+    f1 = x[1]
+    g = 1 + 10 * (n - 1) + sum(x[2:n]^2 - 10 * cos(4 * pi *
+                                                     x[2:n]))
+    h = 1 - sqrt(f1/g)
+    f2 = g * h
+    return(c(f1, f2))
+  }
+
+  NDIM <- 7
+
+  res <- rmoo::rmoo(type = "real-valued",
+                    algorithm = "NSGA-II",
+                    fitness = zdt4,
+                    lower = rep(BOUND_LOW,NDIM),
+                    upper = rep(BOUND_UP,NDIM),
+                    popSize = MU,
+                    maxiter = NGEN,
+                    nObj = NOBJ,
+                    pcrossover = CXPB,
+                    pmutation = MUTPB,
+                    monitor = FALSE,
+                    summary = FALSE,
+                    parallel = FALSE,
+                    seed = i)
+  write.csv(res@fitness, file = paste0("rmoo_fitness_nsga2_zdt4_100_500_2_7-", i, ".csv"), row.names = FALSE)
+
+
+  res1 <- rmoo::rmoo(type = "real-valued",
+                     algorithm = "NSGA-III",
+                     fitness = zdt4,
+                     lower = rep(BOUND_LOW,NDIM),
+                     upper = rep(BOUND_UP,NDIM),
+                     popSize = MU,
+                     maxiter = NGEN,
+                     nObj = NOBJ,
+                     pcrossover = CXPB,
+                     pmutation = MUTPB,
+                     monitor = FALSE,
+                     reference_dirs = ref_points,
+                     summary = FALSE,
+                     parallel = FALSE,
+                     seed = i)
+  write.csv(res1@fitness, file = paste0("rmoo_fitness_nsga3_zdt4_100_500_2_7-", i, ".csv"), row.names = FALSE)
+
+  zdt5 <- function (x, m = 10, n = 5, normal = TRUE, ...) {
+    if (length(x)%%5 != 0 && length(x) < 35)
+    {
+      stop("Bit vector's length must contain at least 35 digits.")
+    }
+    x1 <- x[1:30]
+    xm <- x[31:length(x)]
+    g <- 0
+    vu <- function(v){
+      if (v < 5){
+        x <- 2 + v
+      }else if (v == 5) {
+        x <- 1
+      }
+      return(x)
+    }
+
+    for (i in seq(m)) {
+      x <- sum(xm[((n * (i - 1)) + 1):(n * i)])
+      v <- vu(x)
+      g <- g + v
+    }
+    f1 <- 1 + sum(x1 == 1)
+    f2 <- g * (1 / f1)
+
+    normalize <- function(x, x_min, x_max) {
+      # calculate the denominator
+      denom <- x_max - x_min
+      # we can not divide by zero -> plus small epsilon
+      denom <- denom + 1e-30
+      # normalize the actual values
+      N <- (x - x_min) / denom
+      return(N)
+    }
+
+    if (normal == TRUE){
+      f1 <- normalize(f1, 1, 30)
+      f2 <- normalize(f2, (m - 1) * 1 / 30, (m - 1))
+    }
+    return(cbind(f1,f2))
+  }
+
+  NDIM <- 80
+
+  res <- rmoo(type = "binary",
+              fitness = zdt5,
+              algorithm = "NSGA-III",
+              nBits = NDIM,
+              crossover = pointCrossover,
+              mutation = rmoobin_fbMutation,
+              popSize = MU,
+              maxiter = NGEN,
+              nObj = NOBJ,
+              pcrossover = CXPB,
+              pmutation = MUTPB,
+              reference_dirs = ref_points,
+              monitor = FALSE,
+              summary = FALSE,
+              seed = i)
+  write.csv(res@fitness, file = paste0("rmoo_fitness_nsga3_zdt5_100_500_2_80-", i, ".csv"), row.names = FALSE)
+
+  res1 <- rmoo(type = "binary",
+               fitness = zdt5,
+               algorithm = "NSGA-II",
+               nBits = NDIM,
+               crossover = pointCrossover,
+               mutation = rmoobin_fbMutation,
+               popSize = MU,
+               maxiter = NGEN,
+               nObj = NOBJ,
+               pcrossover = CXPB,
+               pmutation = MUTPB,
+               monitor = FALSE,
+               summary = FALSE,
+               seed = i)
+  write.csv(res1@fitness, file = paste0("rmoo_fitness_nsga2_zdt5_100_500_2_80-", i, ".csv"), row.names = FALSE)
+
+  zdt6 <- function(x) {
+    n = length(x)
+    f1 = 1 - exp(-4 * x[1]) * (sin(6 * pi * x[1]))^6
+    g = 1 + 9 * (sum(x[2:n])/(n - 1))^(0.25)
+    h = 1 - (f1/g)^2
+    f2 = g * h
+    return(c(f1, f2))
+  }
+
+  NDIM <- 10
+  res <- rmoo::rmoo(type = "real-valued",
+                    algorithm = "NSGA-II",
+                    fitness = zdt6,
+                    lower = rep(BOUND_LOW,NDIM),
+                    upper = rep(BOUND_UP,NDIM),
+                    popSize = MU,
+                    maxiter = NGEN,
+                    nObj = NOBJ,
+                    pcrossover = CXPB,
+                    pmutation = MUTPB,
+                    monitor = FALSE,
+                    summary = FALSE,
+                    parallel = FALSE,
+                    seed = i)
+  write.csv(res@fitness, file = paste0("rmoo_fitness_nsga2_zdt6_100_500_2_10-", i, ".csv"), row.names = FALSE)
+
+  res1 <- rmoo::rmoo(type = "real-valued",
+                     algorithm = "NSGA-III",
+                     fitness = zdt6,
+                     lower = rep(BOUND_LOW,NDIM),
+                     upper = rep(BOUND_UP,NDIM),
+                     popSize = MU,
+                     maxiter = NGEN,
+                     nObj = NOBJ,
+                     pcrossover = CXPB,
+                     pmutation = MUTPB,
+                     monitor = FALSE,
+                     reference_dirs = ref_points,
+                     summary = FALSE,
+                     parallel = FALSE,
+                     seed = i)
+  write.csv(res1@fitness, file = paste0("rmoo_fitness_nsga3_zdt6_100_500_2_10-", i, ".csv"), row.names = FALSE)
+
+  print(paste0("Iteration: ", i, "\n"))
+}
+
+
+
+#---------------------------------- DTLZ-----------------------------
+
+dtlz1_pareto <- 0.5 * rmoo::generate_reference_points(3, 12)
+
+generic_sphere <- function(ref_dirs) {
+  norm_ref_dirs <- sqrt(rowSums(ref_dirs^2))
+  return(ref_dirs / matrix(rep(norm_ref_dirs, each=ncol(ref_dirs)), nrow=nrow(ref_dirs), byrow=TRUE))
+}
+
+dtlz2_pareto <- function(ref_dirs=rmoo::generate_reference_points(4, 5)) {
+  return(generic_sphere(ref_dirs))
+}
+
+dtlz3_pareto <- function(ref_dirs=rmoo::generate_reference_points(6, 5)) {
+  return(generic_sphere(ref_dirs))
+}
+
+dtlz7_pareto <- read.csv("~/Simulaciones/DTLZ7-3-PF.csv", header = FALSE)
+
+BOUND_LOW <- 0
+BOUND_UP <- 1
+NGEN = 500
+CXPB = 0.8
+MUTPB = 0.2
+
+
+n_iterations <- 10
+
+for (i in seq_len(n_iterations)) {
+
+  dtlz1 <- function (x, nobj = 3,...) {
+    if (is.null(dim(x))) {
+      x <- matrix(x, 1)
+    }
+    n <- ncol(x)
+    y <- matrix(x[, 1:(nobj - 1)], nrow(x))
+    z <- matrix(x[, nobj:n], nrow(x))
+    g <- 100 * (n - nobj + 1 + rowSums((z - 0.5)^2 - cos(20 *
+                                                           pi * (z - 0.5))))
+    tmp <- t(apply(y, 1, cumprod))
+    tmp <- cbind(t(apply(tmp, 1, rev)), 1)
+    tmp2 <- cbind(1, t(apply(1 - y, 1, rev)))
+    f <- tmp * tmp2 * 0.5 * (1 + g)
+    return(f)
+  }
+
+
+  NDIM <- 4
+  NOBJ <- 3
+  P <- 12
+  ref_dirs <- rmoo::generate_reference_points(NOBJ, P)
+  MU <- nrow(ref_dirs)
+
+  res <- rmoo::rmoo(type = "real-valued",
+                    algorithm = "NSGA-II",
+                    fitness = dtlz1,
+                    lower = rep(BOUND_LOW,NDIM),
+                    upper = rep(BOUND_UP,NDIM),
+                    popSize = MU,
+                    maxiter = NGEN,
+                    nObj = NOBJ,
+                    pcrossover = CXPB,
+                    pmutation = MUTPB,
+                    monitor = FALSE,
+                    summary = FALSE,
+                    parallel = FALSE,
+                    seed = i)
+  write.csv(res@fitness, file = paste0("rmoo_fitness_nsga2_dtlz1_92_500_3_4-", i, ".csv"), row.names = FALSE)
+
+  res1 <- rmoo::rmoo(type = "real-valued",
+                     algorithm = "NSGA-III",
+                     fitness = dtlz1,
+                     lower = rep(BOUND_LOW,NDIM),
+                     upper = rep(BOUND_UP,NDIM),
+                     popSize = MU,
+                     maxiter = NGEN,
+                     nObj = NOBJ,
+                     reference_dirs = ref_dirs,
+                     pcrossover = CXPB,
+                     pmutation = MUTPB,
+                     monitor = FALSE,
+                     summary = FALSE,
+                     parallel = FALSE,
+                     seed = i)
+  write.csv(res1@fitness, file = paste0("rmoo_fitness_nsga3_dtlz1_92_500_3_4-", i, ".csv"), row.names = FALSE)
+
+  dtlz2 <- function (x, nobj = 4, ...) {
+    if (is.null(dim(x))) {
+      x <- matrix(x, 1)
+    }
+    n <- ncol(x)
+    y <- matrix(x[, 1:(nobj - 1)], nrow(x))
+    z <- matrix(x[, nobj:n], nrow(x))
+    g <- rowSums((z - 0.5)^2)
+    tmp <- t(apply(cos(y * pi/2), 1, cumprod))
+    tmp <- cbind(t(apply(tmp, 1, rev)), 1)
+    tmp2 <- cbind(1, t(apply(sin(y * pi/2), 1, rev)))
+    f <- tmp * tmp2 * (1 + g)
+  }
+
+  NDIM <- 5
+  NOBJ <- 4
+  P <- 7
+  ref_dirs <- rmoo::generate_reference_points(NOBJ, P)
+  MU <- nrow(ref_dirs)
+
+  res <- rmoo::rmoo(type = "real-valued",
+                    fitness = dtlz2,
+                    algorithm = "NSGA-II",
+                    lower = rep(BOUND_LOW,NDIM),
+                    upper = rep(BOUND_UP,NDIM),
+                    popSize = MU,
+                    maxiter = NGEN,
+                    nObj = NOBJ,
+                    pcrossover = CXPB,
+                    pmutation = MUTPB,
+                    monitor = FALSE,
+                    summary = FALSE,
+                    parallel = FALSE,
+                    seed = i)
+  write.csv(res@fitness, file = paste0("rmoo_fitness_nsga2_dtlz2_120_500_4_5-", i, ".csv"), row.names = FALSE)
+
+  res1 <- rmoo::rmoo(type = "real-valued",
+                     fitness = dtlz2,
+                     algorithm = "NSGA-III",
+                     lower = rep(BOUND_LOW,NDIM),
+                     upper = rep(BOUND_UP,NDIM),
+                     popSize = MU,
+                     maxiter = NGEN,
+                     nObj = NOBJ,
+                     pcrossover = CXPB,
+                     pmutation = MUTPB,
+                     reference_dirs = ref_dirs,
+                     monitor = FALSE,
+                     summary = FALSE,
+                     parallel = FALSE,
+                     seed = i)
+  write.csv(res1@fitness, file = paste0("rmoo_fitness_nsga3_dtlz2_120_500_4_5-", i, ".csv"), row.names = FALSE)
+
+
+
+  dtlz3 <- function (x, nobj = 6, ...) {
+    if (is.null(dim(x))) {
+      x <- matrix(x, 1)
+    }
+    n <- ncol(x)
+    y <- matrix(x[, 1:(nobj - 1)], nrow(x))
+    z <- matrix(x[, nobj:n], nrow(x))
+    g <- 100 * (n - nobj + 1 + rowSums((z - 0.5)^2 - cos(20 *
+                                                           pi * (z - 0.5))))
+    tmp <- t(apply(cos(y * pi/2), 1, cumprod))
+    tmp <- cbind(t(apply(tmp, 1, rev)), 1)
+    tmp2 <- cbind(1, t(apply(sin(y * pi/2), 1, rev)))
+    f <- tmp * tmp2 * (1 + g)
+  }
+
+
+  NDIM <- 6
+  NOBJ <- 6
+  P <- 5
+  ref_dirs <- rmoo::generate_reference_points(NOBJ, P)
+  MU <- nrow(ref_dirs)
+
+  res <- rmoo::rmoo(type = "real-valued",
+                    algorithm = "NSGA-II",
+                    fitness = dtlz3,
+                    lower = rep(BOUND_LOW,NDIM),
+                    upper = rep(BOUND_UP,NDIM),
+                    popSize = MU,
+                    maxiter = NGEN,
+                    nObj = NOBJ,
+                    pcrossover = CXPB,
+                    pmutation = MUTPB,
+                    monitor = FALSE,
+                    summary = FALSE,
+                    parallel = FALSE,
+                    seed = i)
+  write.csv(res@fitness, file = paste0("rmoo_fitness_nsga2_dtlz3_252_500_6_6-", i, ".csv"), row.names = FALSE)
+
+  res1 <- rmoo::rmoo(type = "real-valued",
+                     algorithm = "NSGA-III",
+                     fitness = dtlz3,
+                     lower = rep(BOUND_LOW,NDIM),
+                     upper = rep(BOUND_UP,NDIM),
+                     popSize = MU,
+                     maxiter = NGEN,
+                     nObj = NOBJ,
+                     pcrossover = CXPB,
+                     pmutation = MUTPB,
+                     reference_dirs = ref_dirs,
+                     monitor = FALSE,
+                     summary = FALSE,
+                     parallel = FALSE,
+                     seed = i)
+  write.csv(res1@fitness, file = paste0("rmoo_fitness_nsga3_dtlz3_252_500_6_6-", i, ".csv"), row.names = FALSE)
+
+
+  dtlz7 <- function (x, nobj = 3,...) {
+    if (is.null(dim(x))) {
+      x <- matrix(x, 1)
+    }
+    n <- ncol(x)
+    y <- matrix(x[, 1:(nobj - 1)], nrow(x))
+    z <- matrix(x[, nobj:n], nrow(x))
+    g <- 1 + 9 * rowSums(z/(1:(n - nobj + 1)))
+    tmp <- cbind(y, 1)
+    tmp2 <- cbind(matrix(1, nrow(x), nobj - 1), (1 + g) * (nobj -
+                                                             rowSums(y/(1 + g) * (1 + sin(3 * pi * y)))))
+    f <- tmp * tmp2
+  }
+
+  NDIM <- 10
+  NOBJ <- 3
+  P <- 12
+  ref_dirs <- rmoo::generate_reference_points(NOBJ, P)
+  MU <- nrow(ref_dirs)
+
+  res <- rmoo::rmoo(type = "real-valued",
+                    algorithm = "NSGA-II",
+                    fitness = dtlz7,
+                    lower = rep(BOUND_LOW,NDIM),
+                    upper = rep(BOUND_UP,NDIM),
+                    popSize = MU,
+                    maxiter = NGEN,
+                    nObj = NOBJ,
+                    pcrossover = CXPB,
+                    pmutation = MUTPB,
+                    monitor = FALSE,
+                    summary = FALSE,
+                    parallel = FALSE,
+                    seed = i)
+  write.csv(res@fitness, file = paste0("rmoo_fitness_nsga2_dtlz7_92_500_3_10-", i, ".csv"), row.names = FALSE)
+
+
+  res1 <- rmoo::rmoo(type = "real-valued",
+                     algorithm = "NSGA-III",
+                     fitness = dtlz7,
+                     lower = rep(BOUND_LOW,NDIM),
+                     upper = rep(BOUND_UP,NDIM),
+                     popSize = MU,
+                     maxiter = NGEN,
+                     nObj = NOBJ,
+                     pcrossover = CXPB,
+                     pmutation = MUTPB,
+                     reference_dirs = ref_dirs,
+                     monitor = FALSE,
+                     summary = FALSE,
+                     parallel = FALSE,
+                     seed = i)
+  write.csv(res1@fitness, file = paste0("rmoo_fitness_nsga3_dtlz7_92_500_3_10-", i, ".csv"), row.names = FALSE)
+  print(paste0("Iteration: ", i, "\n"))
+}
+
+
+#----------------------------MOTSP------------------------------------
+calculateDistArray <- function(data) {
+  data <- as.matrix(dist(data, method = "euclidean", diag = TRUE, upper = TRUE))
+  return(data)
+}
+
+kroA100dist <- calculateDistArray(rmoo::kroA100)
+kroB100dist <- calculateDistArray(rmoo::kroB100)
+kroC100dist <- calculateDistArray(rmoo::kroC100)
+
+distArray <- array(NA_real_, dim=c(100, 100, 3))
+
+distArray[,,1] <- kroA100dist
+distArray[,,2] <- kroB100dist
+distArray[,,3] <- kroC100dist
+
+tourLength <- function(tour, distArray) {
+  route <- c(tour, tour[1])
+  route <- embed(route, 2)[,2:1]
+  sums <- apply(distArray, 3, function(distMat) sum(distMat[route]))
+  return(sums)
+}
+
+
+motspFitness <- function(tour, distArray) 100000/tourLength(tour, distArray)
+
+
+NDIM <- 100
+NOBJ <- 3
+P <- 12
+
+BOUND_LOW <- 1
+BOUND_UP <- 100
+NGEN <- 500
+CXPB <- 0.8
+MUTPB <- 0.2
+
+n_iterations <- 10
+
+for (i in seq_len(n_iterations)) {
+
+  ref_dirs <- rmoo::generate_reference_points(NOBJ, P)
+  MU <- 92
+
+  res <- rmoo::rmoo(type = "permutation",
+                    algorithm = "NSGA-III",
+                    fitness = motspFitness,
+                    lower = BOUND_LOW,
+                    upper = BOUND_UP,
+                    popSize = MU,
+                    maxiter = NGEN,
+                    nObj = NOBJ,
+                    pcrossover = CXPB,
+                    pmutation = MUTPB,
+                    reference_dirs = ref_dirs,
+                    monitor = FALSE,
+                    summary = FALSE,
+                    parallel = FALSE,
+                    seed = i,
+                    distArray = distArray)
+
+  write.csv(res@fitness, file = paste0("rmoo_fitness_nsga3_motsp_92_500_3_100-", i, ".csv"), row.names = FALSE)
+
+
+  res1 <- rmoo::rmoo(type = "permutation",
+                     algorithm = "NSGA-II",
+                     fitness = motspFitness,
+                     lower = BOUND_LOW,
+                     upper = BOUND_UP,
+                     popSize = MU,
+                     maxiter = NGEN,
+                     nObj = NOBJ,
+                     pcrossover = CXPB,
+                     pmutation = MUTPB,
+                     monitor = FALSE,
+                     summary = FALSE,
+                     parallel = FALSE,
+                     seed = i,
+                     distArray = distArray)
+  write.csv(res1@fitness, file = paste0("rmoo_fitness_nsga2_motsp_92_500_3_100-", i, ".csv"), row.names = FALSE)
+
+  print(paste0("Iteration: ", i, "\n"))
+}

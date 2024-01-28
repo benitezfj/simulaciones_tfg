@@ -83,3 +83,38 @@ rm(rmoo.nsga2,
       deap.nsga3,
       deap.nsga2,
       moeadr.moead)
+
+
+
+
+library(ggplot2)
+library(dplyr)
+
+setwd("C:/Users/Maria/Downloads/Tesis/Simulaciones/resultados/Tiempos de Ejecucion/Pymoo/NSGA-III/ZDT 6")
+
+files <- list.files(pattern = "*.csv")
+
+last_iter_times <- c()
+
+for (file in files) {
+  df <- read.csv(file,sep = ";")
+  last_iter <- df$Execution.Time[length(df$Execution.Time)]
+  # last_iter <- df[df$Generacion == max(df$Generacion), "Tiempo"]
+  last_iter_times <- c(last_iter_times, last_iter)
+}
+
+# Calculate max, mean, and min of the vector
+max_val <- max(last_iter_times)
+mean_val <- mean(last_iter_times)
+min_val <- min(last_iter_times)
+
+# Print the max, mean, and min
+print(paste0(max_val," ",mean_val," ",min_val))
+
+df <- data.frame(Tiempo = last_iter_times)
+
+# Create a box plot
+ggplot(df, aes(x = "PYMOO NSGA-III", y = Tiempo)) +
+  geom_boxplot() +
+  labs(x = "", y = "Tiempo de Ejecución (Seg.)", title = "ZDT 6") + theme_minimal() + theme(plot.title = element_text(hjust = 0.5))
+
