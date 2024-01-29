@@ -1,5 +1,8 @@
 library(rmoo)
 library(tidyverse)
+library(emoa)
+library(ecr)
+library(eaf)
 
 calculate_metrics <- function(frameworks, problems, algorithms, reference_point){
   pattern <- "%s_nsga2_%s.csv"
@@ -133,11 +136,278 @@ frameworks <- c("deap", "moeadr", "pymoo", "rmoo")
 
 algorithms <- c("nsga2","nsga3", "moead")
 
-reference_point <- 1
-
-calculate_metrics(problems, frameworks, algorithms, reference_point, input_dir)
 
 
 
 
 
+
+
+
+
+
+
+calculate_metrics <- function(problem, framework, algorithm, reference_point){
+  files <- list.files(pattern = "*.csv")
+  seed<-1
+  pareto_points <- get(paste0(problem, "_pareto"))
+  result_problem <- list()
+  for (file in files) {
+    if ((problem == "zdt5" || problem == "motsp") && framework == "moeadr" && algorithm == "moead") {
+      next
+    } else if ((framework == "pymoo" || framework == "deap" || framework == "rmoo") && algorithm == "moead") {
+      next
+    } else if (framework == "moeadr" && (algorithm == "nsga2" || algorithm == "nsga3")) {
+      next
+    }
+    content <- read.csv(file)
+    ref_point <- rep(reference_point, ncol(content))
+
+    if (problem == "dtlz7" || problem == "dtlz1" || problem == "motsp") {
+      problem_metric <- data.frame(Framework = framework,
+                                   Algorithm = algorithm,
+                                   Problem = problem,
+                                   Seed = seed,
+                                   HV = emoa::dominated_hypervolume(points = t(content), ref = ref_point),
+                                   GD = ecr::computeGenerationalDistance(t(content), t(pareto_points)),
+                                   IGD = eaf::igd_plus(data = content, reference = pareto_points))
+
+    } else{
+      problem_metric <- data.frame(Framework = framework,
+                                   Algorithm = algorithm,
+                                   Problem = problem,
+                                   Seed = seed,
+                                   HV = emoa::dominated_hypervolume(points = t(content), ref = ref_point),
+                                   GD = ecr::computeGenerationalDistance(t(content), t(pareto_points())),
+                                   IGD = eaf::igd_plus(data = content, reference = pareto_points()))
+    }
+
+    result_problem[[length(result_problem) + 1]] <- problem_metric
+
+    cat(framework,"_",algorithm,"_",problem,"_",seed,"\n")
+    cat("\n")
+    seed<-seed+1
+  }
+  all_result_problem <- do.call(rbind, result_problem)
+  matrix_name_problem <- paste0(framework,"_",algorithm,"_",problem,"_metrics",".csv")
+  write.csv(all_result_problem, matrix_name_problem, row.names = FALSE)
+}
+
+setwd("C:/Users/Maria/Downloads/Tesis/Simulaciones/Multi-objective/MOEADr/Iterations/ZDT 1")
+problem <- c("zdt1")
+framework <- c("moeadr")
+algorithm <- c("moead")
+reference_point <- 2
+calculate_metrics(problem, framework, algorithm, reference_point)
+
+setwd("C:/Users/Maria/Downloads/Tesis/Simulaciones/Multi-objective/MOEADr/Iterations/ZDT 2")
+problem <- c("zdt2")
+framework <- c("moeadr")
+algorithm <- c("moead")
+reference_point <- 2
+calculate_metrics(problem, framework, algorithm, reference_point)
+
+setwd("C:/Users/Maria/Downloads/Tesis/Simulaciones/Multi-objective/MOEADr/Iterations/ZDT 3")
+problem <- c("zdt3")
+framework <- c("moeadr")
+algorithm <- c("moead")
+reference_point <- 2
+calculate_metrics(problem, framework, algorithm, reference_point)
+
+setwd("C:/Users/Maria/Downloads/Tesis/Simulaciones/Multi-objective/MOEADr/Iterations/ZDT 4")
+problem <- c("zdt4")
+framework <- c("moeadr")
+algorithm <- c("moead")
+reference_point <- 4
+calculate_metrics(problem, framework, algorithm, reference_point)
+
+setwd("C:/Users/Maria/Downloads/Tesis/Simulaciones/Multi-objective/MOEADr/Iterations/ZDT 6")
+problem <- c("zdt6")
+framework <- c("moeadr")
+algorithm <- c("moead")
+reference_point <- 4
+calculate_metrics(problem, framework, algorithm, reference_point)
+
+
+
+
+
+
+setwd("C:/Users/Maria/Downloads/Tesis/Simulaciones/Multi-objective/pymoo/Iteration/NSGA-II/ZDT 1")
+problem <- c("zdt1")
+framework <- c("pymoo")
+algorithm <- c("nsga2")
+reference_point <- 2
+calculate_metrics(problem, framework, algorithm, reference_point)
+
+setwd("C:/Users/Maria/Downloads/Tesis/Simulaciones/Multi-objective/pymoo/Iteration/NSGA-II/ZDT 2")
+problem <- c("zdt2")
+framework <- c("pymoo")
+algorithm <- c("nsga2")
+reference_point <- 2
+calculate_metrics(problem, framework, algorithm, reference_point)
+
+setwd("C:/Users/Maria/Downloads/Tesis/Simulaciones/Multi-objective/pymoo/Iteration/NSGA-II/ZDT 3")
+problem <- c("zdt3")
+framework <- c("pymoo")
+algorithm <- c("nsga2")
+reference_point <- 2
+calculate_metrics(problem, framework, algorithm, reference_point)
+
+setwd("C:/Users/Maria/Downloads/Tesis/Simulaciones/Multi-objective/pymoo/Iteration/NSGA-II/ZDT 4")
+problem <- c("zdt4")
+framework <- c("pymoo")
+algorithm <- c("nsga2")
+reference_point <- 4
+calculate_metrics(problem, framework, algorithm, reference_point)
+
+setwd("C:/Users/Maria/Downloads/Tesis/Simulaciones/Multi-objective/pymoo/Iteration/NSGA-II/ZDT 5")
+problem <- c("zdt5")
+framework <- c("pymoo")
+algorithm <- c("nsga2")
+reference_point <- 2
+calculate_metrics(problem, framework, algorithm, reference_point)
+
+setwd("C:/Users/Maria/Downloads/Tesis/Simulaciones/Multi-objective/pymoo/Iteration/NSGA-II/ZDT 6")
+problem <- c("zdt6")
+framework <- c("pymoo")
+algorithm <- c("nsga2")
+reference_point <- 4
+calculate_metrics(problem, framework, algorithm, reference_point)
+
+
+
+setwd("C:/Users/Maria/Downloads/Tesis/Simulaciones/Multi-objective/pymoo/Iteration/NSGA-III/ZDT 1")
+problem <- c("zdt1")
+framework <- c("pymoo")
+algorithm <- c("nsga3")
+reference_point <- 2
+calculate_metrics(problem, framework, algorithm, reference_point)
+
+setwd("C:/Users/Maria/Downloads/Tesis/Simulaciones/Multi-objective/pymoo/Iteration/NSGA-III/ZDT 2")
+problem <- c("zdt2")
+framework <- c("pymoo")
+algorithm <- c("nsga3")
+reference_point <- 2
+calculate_metrics(problem, framework, algorithm, reference_point)
+
+setwd("C:/Users/Maria/Downloads/Tesis/Simulaciones/Multi-objective/pymoo/Iteration/NSGA-III/ZDT 3")
+problem <- c("zdt3")
+framework <- c("pymoo")
+algorithm <- c("nsga3")
+reference_point <- 2
+calculate_metrics(problem, framework, algorithm, reference_point)
+
+setwd("C:/Users/Maria/Downloads/Tesis/Simulaciones/Multi-objective/pymoo/Iteration/NSGA-III/ZDT 4")
+problem <- c("zdt4")
+framework <- c("pymoo")
+algorithm <- c("nsga3")
+reference_point <- 4
+calculate_metrics(problem, framework, algorithm, reference_point)
+
+setwd("C:/Users/Maria/Downloads/Tesis/Simulaciones/Multi-objective/pymoo/Iteration/NSGA-III/ZDT 5")
+problem <- c("zdt5")
+framework <- c("pymoo")
+algorithm <- c("nsga3")
+reference_point <- 2
+calculate_metrics(problem, framework, algorithm, reference_point)
+
+setwd("C:/Users/Maria/Downloads/Tesis/Simulaciones/Multi-objective/pymoo/Iteration/NSGA-III/ZDT 6")
+problem <- c("zdt6")
+framework <- c("pymoo")
+algorithm <- c("nsga3")
+reference_point <- 4
+calculate_metrics(problem, framework, algorithm, reference_point)
+
+
+
+
+
+
+setwd("C:/Users/Maria/Downloads/Tesis/Simulaciones/Multi-objective/rmoo/Iteration/NSGA-II/ZDT 1")
+problem <- c("zdt1")
+framework <- c("rmoo")
+algorithm <- c("nsga2")
+reference_point <- 2
+calculate_metrics(problem, framework, algorithm, reference_point)
+
+setwd("C:/Users/Maria/Downloads/Tesis/Simulaciones/Multi-objective/rmoo/Iteration/NSGA-II/ZDT 2")
+problem <- c("zdt2")
+framework <- c("rmoo")
+algorithm <- c("nsga2")
+reference_point <- 2
+calculate_metrics(problem, framework, algorithm, reference_point)
+
+setwd("C:/Users/Maria/Downloads/Tesis/Simulaciones/Multi-objective/rmoo/Iteration/NSGA-II/ZDT 3")
+problem <- c("zdt3")
+framework <- c("rmoo")
+algorithm <- c("nsga2")
+reference_point <- 2
+calculate_metrics(problem, framework, algorithm, reference_point)
+
+setwd("C:/Users/Maria/Downloads/Tesis/Simulaciones/Multi-objective/rmoo/Iteration/NSGA-II/ZDT 4")
+problem <- c("zdt4")
+framework <- c("rmoo")
+algorithm <- c("nsga2")
+reference_point <- 4
+calculate_metrics(problem, framework, algorithm, reference_point)
+
+setwd("C:/Users/Maria/Downloads/Tesis/Simulaciones/Multi-objective/rmoo/Iteration/NSGA-II/ZDT 5")
+problem <- c("zdt5")
+framework <- c("rmoo")
+algorithm <- c("nsga2")
+reference_point <- 2
+calculate_metrics(problem, framework, algorithm, reference_point)
+
+setwd("C:/Users/Maria/Downloads/Tesis/Simulaciones/Multi-objective/rmoo/Iteration/NSGA-II/ZDT 6")
+problem <- c("zdt6")
+framework <- c("rmoo")
+algorithm <- c("nsga2")
+reference_point <- 4
+calculate_metrics(problem, framework, algorithm, reference_point)
+
+
+
+
+
+setwd("C:/Users/Maria/Downloads/Tesis/Simulaciones/Multi-objective/rmoo/Iteration/NSGA-III/ZDT 1")
+problem <- c("zdt1")
+framework <- c("rmoo")
+algorithm <- c("nsga3")
+reference_point <- 2
+calculate_metrics(problem, framework, algorithm, reference_point)
+
+setwd("C:/Users/Maria/Downloads/Tesis/Simulaciones/Multi-objective/rmoo/Iteration/NSGA-III/ZDT 2")
+problem <- c("zdt2")
+framework <- c("rmoo")
+algorithm <- c("nsga2")
+reference_point <- 2
+calculate_metrics(problem, framework, algorithm, reference_point)
+
+setwd("C:/Users/Maria/Downloads/Tesis/Simulaciones/Multi-objective/rmoo/Iteration/NSGA-III/ZDT 3")
+problem <- c("zdt3")
+framework <- c("rmoo")
+algorithm <- c("nsga3")
+reference_point <- 2
+calculate_metrics(problem, framework, algorithm, reference_point)
+
+setwd("C:/Users/Maria/Downloads/Tesis/Simulaciones/Multi-objective/rmoo/Iteration/NSGA-III/ZDT 4")
+problem <- c("zdt4")
+framework <- c("rmoo")
+algorithm <- c("nsga3")
+reference_point <- 4
+calculate_metrics(problem, framework, algorithm, reference_point)
+
+setwd("C:/Users/Maria/Downloads/Tesis/Simulaciones/Multi-objective/rmoo/Iteration/NSGA-III/ZDT 5")
+problem <- c("zdt5")
+framework <- c("rmoo")
+algorithm <- c("nsga3")
+reference_point <- 2
+calculate_metrics(problem, framework, algorithm, reference_point)
+
+setwd("C:/Users/Maria/Downloads/Tesis/Simulaciones/Multi-objective/rmoo/Iteration/NSGA-III/ZDT 6")
+problem <- c("zdt6")
+framework <- c("rmoo")
+algorithm <- c("nsga3")
+reference_point <- 4
+calculate_metrics(problem, framework, algorithm, reference_point)

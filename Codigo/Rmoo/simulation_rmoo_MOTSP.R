@@ -1,6 +1,7 @@
 library(rmoo)
 library(tidyverse)
 
+motsp_pareto <- rmoo::generate_reference_points(3,12)
 
 measure_time <- function(object, number_objectives, ...) {
   elapsed_time <- Sys.time() - start_time
