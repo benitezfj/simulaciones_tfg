@@ -89,18 +89,20 @@ rm(rmoo.nsga2,
 
 library(ggplot2)
 library(dplyr)
+library(reshape2)
 
-setwd("C:/Users/Maria/Downloads/Tesis/Simulaciones/resultados/Tiempos de Ejecucion/Pymoo/NSGA-III/ZDT 6")
-
+input_dir <- "C:/Users/Maria/Downloads/Tesis/Simulaciones/Many Objective/results"
 files <- list.files(pattern = "*.csv")
 
 last_iter_times <- c()
+df <- data.frame()
 
 for (file in files) {
-  df <- read.csv(file,sep = ";")
-  last_iter <- df$Execution.Time[length(df$Execution.Time)]
+  df <- read.csv(file)
+  print(head(df))
+  # last_iter <- df$Execution.Time[length(df$Execution.Time)]
   # last_iter <- df[df$Generacion == max(df$Generacion), "Tiempo"]
-  last_iter_times <- c(last_iter_times, last_iter)
+  # last_iter_times <- c(last_iter_times, last_i0ter)
 }
 
 # Calculate max, mean, and min of the vector
@@ -117,4 +119,47 @@ df <- data.frame(Tiempo = last_iter_times)
 ggplot(df, aes(x = "PYMOO NSGA-III", y = Tiempo)) +
   geom_boxplot() +
   labs(x = "", y = "Tiempo de Ejecución (Seg.)", title = "ZDT 6") + theme_minimal() + theme(plot.title = element_text(hjust = 0.5))
+
+
+
+
+library(ggplot2)
+
+input_dir <- "C:/Users/Maria/Downloads/Tesis/Simulaciones/Multi-objective/results"
+files <- list.files(input_dir, pattern = "*.csv")
+
+data <- data.frame(Value=numeric(),Prefix=character())
+
+for (file in files) {
+  prefix <- strsplit(file, "-")[[1]][1]
+  df <- read.csv(file)
+  if(length(colnames(df))==3){
+    last_iter <- df[df$gen == max(df$gen), "Tiempo"]
+  } else if (length(colnames(df))==2){
+    last_iter <- df[df$Generacion == max(df$Generacion), "Tiempo"]
+  } else{
+    last_iter <- df$Execution.Time[length(df$Execution.Time)]
+  }
+  data <- rbind(data, data.frame(Value=last_iter,Prefix=prefix))
+}
+colnames(data) <- c("Tiempo","Implementacion")
+write.csv(data, file = "zdt6_tiempos_boxplot_data.csv",row.names = FALSE)
+data <- read.csv(file = "zdt6_tiempos_boxplot_data.csv")
+
+colors <- c("MOEADr-MOEA/D" = '#53b400',
+            "DEAP-NSGA-II" = '#f8766d',
+            "PYMOO-NSGA-II"='#00c094',
+            "RMOO-NSGA-II"='#00b6eb',
+            "DEAP-NSGA-III"='#5D8098',
+            "PYMOO-NSGA-III"='#a58aff',
+            "RMOO-NSGA-III"='#fb61d7')
+
+# Create a boxplot with a legend on the right
+ggplot(data, aes(x=Implementacion, y=Tiempo, fill=Implementacion)) +
+  geom_boxplot() +
+  scale_fill_manual(values=colors) +
+  theme_minimal() +
+  theme(legend.position="right",
+        plot.title = element_text(hjust = 0.5)) +
+  labs(x = "", y = "Tiempo de Ejecución (Seg.)", title = "ZDT 6")
 
