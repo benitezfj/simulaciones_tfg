@@ -1,3 +1,17 @@
+if (!require("pacman")) {
+  install.packages("pacman", dependencies = TRUE)
+  library("pacman")
+}
+
+pacman::p_load(caret, # Algoritmo genetico GA
+               tidyverse,
+               reticulate,  # Simulación numérica
+               ecr, # Auxiliar para GA
+               rmoo, # Algoritmo genetico GA
+               class, # gramatica de manipulación de dataframe
+               e1071,
+               ModelMetrics) # Gramatica para objetos gg de visualización
+
 library(caret)
 library(tidyverse)
 library(rmoo)
@@ -258,11 +272,13 @@ f <- file(paste0(dataset_name,"_fitness_",algorithm,"_",model,".csv"), "w")
 g <- file(paste0(dataset_name,"_solution_",algorithm,"_",model,".csv"), "w")
 h <- file(paste0(dataset_name,"_metrics_",algorithm,"_",model,".csv"), "w")
 k <- file(paste0(dataset_name,"_evaluation_",algorithm,"_",model,".csv"), "w")
+l <- file(paste0(dataset_name,"_cross_validation_",algorithm,"_",model,".csv"), "w")
 
 # Write the column names
 writeLines(c("Recall,NFS,MI,MacroF1"), f)
 writeLines(c("GD,IGD,HV"), h)
 writeLines(c("Recall,NFS,MI,MacroF1,ACC"), k)
+writeLines(c("ACC1,ACC2,ACC3,ACC4,ACC5"), l)
 
 # Write the data
 for (i in 1:10) {
@@ -286,6 +302,8 @@ for (i in 1:10) {
                 mutual_info = features.mutual_info,
                 estimator = get(model),
                 seed=i)
+
+  skf <- sklearn$model_selection$StratifiedKFold(n_splits=5, shuffle=True, random_state=i)
 
   igd <- ecr::computeInvertedGenerationalDistance(t(unique(maofs@fitness[maofs@f[[1]],])),
                                                   t(reference_dirs))
@@ -319,6 +337,23 @@ for (i in 1:10) {
                                      estimator=get(model))
     writeLines(as.character(evaluation), k, sep = ",")
     writeLines("\n", k)
+
+    if (all(!unique_population[j,])) {
+      # No features selected, assign zero scores for all folds
+      cv_scores <- c(0, 0, 0, 0, 0) # Replace with appropriate number of scores
+      writeLines(as.character(cv_scores), l, sep = ",")
+      writeLines("\n", l)
+    } else {
+      cv_scores <-sklearn$model_selection$cross_val_score(estimator = get(model),
+                                                          X = train_features[, population],
+                                                          train_classes,
+                                                          cv=kf,
+                                                          scoring="accuracy")
+
+      writeLines(as.character(cv_scores), l, sep = ",")
+      writeLines("\n", l)
+    }
+
   }
 
   writeLines("\n", f)
@@ -328,13 +363,16 @@ for (i in 1:10) {
   writeLines("\n", k)
   writeLines("\n", k)
   writeLines("\n", h)
+  writeLines("\n", l)
 
   cat("\n","----",i,"----","\n")
 
 }
+
 
 # Close the files
 close(f)
 close(g)
 close(h)
 close(k)
+close(l)
